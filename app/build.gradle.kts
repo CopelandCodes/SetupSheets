@@ -63,7 +63,7 @@ dependencies {
     implementation(libs.androidx.compose.bom.v20231001)
     implementation(libs.ui)
     implementation(libs.material3)
-    implementation(libs.androidx.activity.compose.v1101)
+    implementation(libs.androidx.activity.compose)
 
     // Room (Database)
     implementation(libs.androidx.room.runtime.v261)
