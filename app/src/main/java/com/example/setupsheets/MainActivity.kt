@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.example.setupsheets.data.NoteRepository
 import com.example.setupsheets.db.NoteDatabase
-import com.example.setupsheets.navigation.NavGraph
+import com.example.setupsheets.navigation.SetupNavGraph
 import com.example.setupsheets.ui.theme.SetupSheetsTheme
 import com.example.setupsheets.viewmodel.NoteViewModel
 import com.example.setupsheets.viewmodel.NoteViewModelFactory
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             SetupSheetsTheme {
-                NavGraph(navController = navController, noteViewModel = noteViewModel)
+                SetupNavGraph(navController = navController, noteViewModel = noteViewModel)
             }
         }
     }

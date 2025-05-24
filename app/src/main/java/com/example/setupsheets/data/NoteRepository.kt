@@ -5,20 +5,19 @@ import com.example.setupsheets.db.NoteDao
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Repository class that abstracts access to data sources for notes.
- * It provides a clean API for the ViewModel to interact with the Room database.
+ * Repository that abstracts access to the data source for Notes.
+ * Provides a clean API for accessing and manipulating notes.
  */
 class NoteRepository(private val noteDao: NoteDao) {
 
     /**
-     * A flow of all notes in the database, ordered by ID descending.
+     * Retrieves all notes as a Flow stream from the DAO.
      */
     val allNotes: Flow<List<Note>> = noteDao.getAllNotes()
 
     /**
      * Inserts a new note into the database.
-     *
-     * @param note The note to insert.
+     * @param note The note to be inserted.
      */
     suspend fun insert(note: Note) {
         noteDao.insert(note)
@@ -26,8 +25,7 @@ class NoteRepository(private val noteDao: NoteDao) {
 
     /**
      * Updates an existing note in the database.
-     *
-     * @param note The note to update.
+     * @param note The note with updated values.
      */
     suspend fun update(note: Note) {
         noteDao.update(note)
@@ -35,30 +33,9 @@ class NoteRepository(private val noteDao: NoteDao) {
 
     /**
      * Deletes a note from the database.
-     *
-     * @param note The note to delete.
+     * @param note The note to be deleted.
      */
     suspend fun delete(note: Note) {
         noteDao.delete(note)
-    }
-
-    /**
-     * Retrieves a note by its ID.
-     *
-     * @param id The ID of the note.
-     * @return The note with the specified ID, or null if not found.
-     */
-    suspend fun getNoteById(id: Int): Note? {
-        return noteDao.getNoteById(id)
-    }
-
-    /**
-     * Searches for notes that contain the given query in their title or content.
-     *
-     * @param query The text to search for.
-     * @return A flow of notes matching the search criteria.
-     */
-    fun searchNotes(query: String): Flow<List<Note>> {
-        return noteDao.searchNotes(query)
     }
 }

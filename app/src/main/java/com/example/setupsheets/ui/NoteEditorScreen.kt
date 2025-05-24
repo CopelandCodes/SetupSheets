@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.setupsheets.db.Note
@@ -18,24 +19,50 @@ import kotlinx.coroutines.launch
 @Composable
 fun NoteEditorScreen(
     noteViewModel: NoteViewModel,
-    onSaveSuccess: () -> Unit
+    onSaveSuccess: () -> Unit,
+    noteId: Int = -1
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // Input state for form fields
-    var title by remember { mutableStateOf("") }
-    var content by remember { mutableStateOf("") }
-    var xCoord by remember { mutableStateOf("") }
-    var yCoord by remember { mutableStateOf("") }
-    var zCoord by remember { mutableStateOf("") }
-    var projectionLength by remember { mutableStateOf("") }
-    var barSize by remember { mutableStateOf("") }
-    var subSpindleColletSize by remember { mutableStateOf("") }
+    // Fetch the note if editing (noteId != -1)
+    val editingNote = noteViewModel.notes.collectAsState().value.find { it.id == noteId }
 
-    // Lists for dynamic tool inputs
-    var mainTools = remember { mutableStateListOf(Pair("", "")) }
-    var subTools = remember { mutableStateListOf<Pair<String, String>>() }
+    // Input state for form fields (initialized once when editingNote is loaded)
+    var title by rememberSaveable { mutableStateOf(editingNote?.title ?: "") }
+    var content by rememberSaveable { mutableStateOf(editingNote?.content ?: "") }
+    var xCoord by rememberSaveable { mutableStateOf("") }
+    var yCoord by rememberSaveable { mutableStateOf("") }
+    var zCoord by rememberSaveable { mutableStateOf("") }
+    var projectionLength by rememberSaveable { mutableStateOf(editingNote?.projectionLength ?: "") }
+    var barSize by rememberSaveable { mutableStateOf(editingNote?.barSize ?: "") }
+    var subSpindleColletSize by rememberSaveable { mutableStateOf(editingNote?.subSpindleColletSize ?: "") }
+
+    var mainTools = remember { mutableStateListOf<Pair<String, String>>().apply {
+        if (editingNote != null) {
+            addAll(editingNote.mainSpindleTools.map { it.name to it.description })
+        } else {
+            add(Pair("", ""))
+        }
+    }}
+
+    var subTools = remember { mutableStateListOf<Pair<String, String>>().apply {
+        if (editingNote != null) {
+            addAll(editingNote.subSpindleTools.map { it.name to it.description })
+        }
+    }}
+
+    // Split coordinates if editing
+    LaunchedEffect(editingNote) {
+        editingNote?.coordinates?.let { coords ->
+            val regex = """X:(\S+)\s+Y:(\S+)\s+Z:(\S+)""".toRegex()
+            regex.find(coords)?.destructured?.let { (x, y, z) ->
+                xCoord = x
+                yCoord = y
+                zCoord = z
+            }
+        }
+    }
 
     // Layout structure using Scaffold for snackbar support
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
@@ -178,7 +205,6 @@ fun NoteEditorScreen(
             item {
                 Button(
                     onClick = {
-                        // Form validation for required fields
                         if (title.isBlank() || xCoord.isBlank() || yCoord.isBlank() || zCoord.isBlank()
                             || mainTools.any { it.first.isBlank() && it.second.isBlank() }
                             || projectionLength.isBlank() || barSize.isBlank()
@@ -189,8 +215,8 @@ fun NoteEditorScreen(
                             return@Button
                         }
 
-                        // Build Note entity using field values
                         val note = Note(
+                            id = editingNote?.id ?: 0,
                             title = title,
                             coordinates = "X:$xCoord Y:$yCoord Z:$zCoord",
                             content = content,
@@ -201,18 +227,20 @@ fun NoteEditorScreen(
                             subSpindleColletSize = subSpindleColletSize
                         )
 
-                        // Insert note via ViewModel
-                        noteViewModel.addNote(note)
-
-                        // Confirm save and navigate away
                         scope.launch {
-                            snackbarHostState.showSnackbar("Note saved successfully")
+                            if (editingNote != null) {
+                                noteViewModel.updateNote(note)
+                                snackbarHostState.showSnackbar("Note updated")
+                            } else {
+                                noteViewModel.addNote(note)
+                                snackbarHostState.showSnackbar("Note added")
+                            }
+                            onSaveSuccess()
                         }
-                        onSaveSuccess()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Save Note")
+                    Text(if (editingNote != null) "Update Note" else "Save Note")
                 }
             }
         }

@@ -1,41 +1,82 @@
-package com.example.setupsheets.data
+package com.example.setupsheets.viewmodel
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.example.setupsheets.data.NoteRepository
 import com.example.setupsheets.db.Note
-import com.example.setupsheets.db.NoteDao
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+
 
 /**
- * Repository that abstracts access to the data source for Notes.
- * Provides a clean API for accessing and manipulating notes.
+ * ViewModel for managing note-related operations, including search functionality.
  */
-class NoteRepository(private val noteDao: NoteDao) {
+class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
+
+    // Holds the current search query entered by the user
+    internal val searchQuery = MutableStateFlow("")
+
+    // All notes from the repository
+    private val allNotes = repository.allNotes
 
     /**
-     * Retrieves all notes as a Flow stream from the DAO.
+     * A filtered list of notes that reacts to both the list of notes
+     * and the current search query.
      */
-    val allNotes: Flow<List<Note>> = noteDao.getAllNotes()
+    val notes: StateFlow<List<Note>> = combine(allNotes, searchQuery) { notes, query ->
+        if (query.isBlank()) {
+            notes
+        } else {
+            notes.filter { note ->
+                note.title.contains(query, ignoreCase = true) ||
+                        note.content.contains(query, ignoreCase = true)
+            }
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
 
     /**
-     * Inserts a new note into the database.
-     * @param note The note to be inserted.
+     * Updates the current search query.
      */
-    suspend fun insert(note: Note) {
-        noteDao.insert(note)
+    fun updateSearchQuery(query: String) {
+        searchQuery.value = query
     }
 
     /**
-     * Updates an existing note in the database.
-     * @param note The note with updated values.
+     * Adds a new note.
      */
-    suspend fun update(note: Note) {
-        noteDao.update(note)
+    fun addNote(note: Note) = viewModelScope.launch {
+        repository.insert(note)
     }
 
     /**
-     * Deletes a note from the database.
-     * @param note The note to be deleted.
+     * Updates an existing note.
      */
-    suspend fun delete(note: Note) {
-        noteDao.delete(note)
+    fun updateNote(note: Note) = viewModelScope.launch {
+        repository.update(note)
+    }
+
+    /**
+     * Deletes a note.
+     */
+    fun deleteNote(note: Note) = viewModelScope.launch {
+        repository.delete(note)
+    }
+}
+
+/**
+ * Factory to create instances of NoteViewModel with a repository dependency.
+ */
+class NoteViewModelFactory(private val repository: NoteRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return NoteViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
