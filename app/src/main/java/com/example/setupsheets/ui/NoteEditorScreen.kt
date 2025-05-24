@@ -1,120 +1,202 @@
 package com.example.setupsheets.ui
 
+
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.example.setupsheets.db.Note
 import com.example.setupsheets.viewmodel.NoteViewModel
+import kotlinx.coroutines.launch
 
-/**
- * Composable screen for creating or editing a note.
- * It shows text fields for all note fields and Save/Delete buttons.
- *
- * @param note The note to edit (if null, a new note will be created)
- * @param viewModel The shared NoteViewModel instance
- * @param navController Used to navigate back to the note list after saving or deleting
- */
 @Composable
 fun NoteEditorScreen(
-    note: Note? = null,
-    viewModel: NoteViewModel = viewModel(),
-    navController: NavController
+    noteViewModel: NoteViewModel,
+    onSaveSuccess: () -> Unit
 ) {
-    // State variables for each field with pre-filled values if editing
-    var title by remember { mutableStateOf(note?.title ?: "") }
-    var coordinates by remember { mutableStateOf(note?.coordinates ?: "") }
-    var content by remember { mutableStateOf(note?.content ?: "") }
-    var toolList by remember { mutableStateOf(note?.toolList ?: "") }
-    var projectionLength by remember { mutableStateOf(note?.projectionLength ?: "") }
-    var barSize by remember { mutableStateOf(note?.barSize ?: "") }
-    var subSpindleColletSize by remember { mutableStateOf(note?.subSpindleColletSize ?: "") }
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    // UI layout using Column and spacing
-    Column(modifier = Modifier.padding(16.dp)) {
-        // Text fields for each property of the note
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Title") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = coordinates,
-            onValueChange = { coordinates = it },
-            label = { Text("Coordinates") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = content,
-            onValueChange = { content = it },
-            label = { Text("Content") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = toolList,
-            onValueChange = { toolList = it },
-            label = { Text("Tool List") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = projectionLength,
-            onValueChange = { projectionLength = it },
-            label = { Text("Projection Length") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = barSize,
-            onValueChange = { barSize = it },
-            label = { Text("Bar Size") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = subSpindleColletSize,
-            onValueChange = { subSpindleColletSize = it },
-            label = { Text("Sub Spindle Collet Size") },
-            modifier = Modifier.fillMaxWidth()
-        )
+    // State for each input field
+    var title by remember { mutableStateOf("") }
+    var content by remember { mutableStateOf("") }
+    var xCoord by remember { mutableStateOf("") }
+    var yCoord by remember { mutableStateOf("") }
+    var zCoord by remember { mutableStateOf("") }
 
-        Spacer(modifier = Modifier.height(16.dp))
+    var mainTools = remember { mutableStateListOf(Pair("", "")) }
+    var subTools = remember { mutableStateListOf<Pair<String, String>>() }
 
-        // Save button – calls addNote or updateNote depending on context
-        Button(onClick = {
-            val updatedNote = Note(
-                id = note?.id ?: 0,
-                title = title,
-                coordinates = coordinates,
-                content = content,
-                toolList = toolList,
-                projectionLength = projectionLength,
-                barSize = barSize,
-                subSpindleColletSize = subSpindleColletSize
-            )
+    var projectionLength by remember { mutableStateOf("") }
+    var barSize by remember { mutableStateOf("") }
+    var subSpindleColletSize by remember { mutableStateOf("") }
 
-            if (note == null) {
-                viewModel.addNote(updatedNote) // New note
-            } else {
-                viewModel.updateNote(updatedNote) // Existing note
+    // UI layout
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { padding ->
+        LazyColumn(modifier = Modifier
+            .padding(padding)
+            .padding(16.dp)
+            .fillMaxSize()) {
+
+            item {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Part:") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
             }
-            navController.popBackStack() // Go back to note list
-        }) {
-            Text("Save")
-        }
 
-        // Show delete button only if editing an existing note
-        if (note != null) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = {
-                    viewModel.deleteNote(note)
-                    navController.popBackStack()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-            ) {
-                Text("Delete")
+            item {
+                OutlinedTextField(
+                    value = content,
+                    onValueChange = { content = it },
+                    label = { Text("Notes:") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            item {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    OutlinedTextField(
+                        value = xCoord,
+                        onValueChange = { xCoord = it },
+                        label = { Text("X:") },
+                        modifier = Modifier.weight(1f).padding(end = 4.dp),
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = yCoord,
+                        onValueChange = { yCoord = it },
+                        label = { Text("Y:") },
+                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = zCoord,
+                        onValueChange = { zCoord = it },
+                        label = { Text("Z:") },
+                        modifier = Modifier.weight(1f).padding(start = 4.dp),
+                        singleLine = true
+                    )
+                }
+            }
+
+            item {
+                Text("Main Spindle Tools:", style = MaterialTheme.typography.titleMedium)
+                mainTools.forEachIndexed { index, pair ->
+                    Row(Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = pair.first,
+                            onValueChange = { mainTools[index] = pair.copy(first = it) },
+                            label = { Text("Tools:") },
+                            modifier = Modifier.weight(1f).padding(end = 4.dp)
+                        )
+                        OutlinedTextField(
+                            value = pair.second,
+                            onValueChange = { mainTools[index] = pair.copy(second = it) },
+                            label = { Text("Description:") },
+                            modifier = Modifier.weight(1f).padding(start = 4.dp)
+                        )
+                    }
+                }
+                TextButton(onClick = { mainTools.add(Pair("", "")) }) {
+                    Text("Add Tool")
+                }
+            }
+
+            item {
+                Text("Sub-Spindle Tools:", style = MaterialTheme.typography.titleMedium)
+                subTools.forEachIndexed { index, pair ->
+                    Row(Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = pair.first,
+                            onValueChange = { subTools[index] = pair.copy(first = it) },
+                            label = { Text("Tools:") },
+                            modifier = Modifier.weight(1f).padding(end = 4.dp)
+                        )
+                        OutlinedTextField(
+                            value = pair.second,
+                            onValueChange = { subTools[index] = pair.copy(second = it) },
+                            label = { Text("Description:") },
+                            modifier = Modifier.weight(1f).padding(start = 4.dp)
+                        )
+                    }
+                }
+                TextButton(onClick = { subTools.add(Pair("", "")) }) {
+                    Text("Add Tool")
+                }
+            }
+
+            item {
+                OutlinedTextField(
+                    value = projectionLength,
+                    onValueChange = { projectionLength = it },
+                    label = { Text("Projection Length:") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = barSize,
+                    onValueChange = { barSize = it },
+                    label = { Text("Bar Size:") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = subSpindleColletSize,
+                    onValueChange = { subSpindleColletSize = it },
+                    label = { Text("Sub Spindle Collet Size:") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
+
+            item {
+                Button(onClick = {
+                    if (title.isBlank() || xCoord.isBlank() || yCoord.isBlank() || zCoord.isBlank()
+                        || mainTools.any { it.first.isBlank() && it.second.isBlank() }
+                        || projectionLength.isBlank() || barSize.isBlank()
+                    ) {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Please fill out all required fields")
+                        }
+                        return@Button
+                    }
+
+                    val toolList = (mainTools + subTools).joinToString("\n") { "${it.first}: ${it.second}" }
+
+                    val note = Note(
+                        title = title,
+                        coordinates = "X:$xCoord Y:$yCoord Z:$zCoord",
+                        content = content,
+                        toolList = toolList,
+                        projectionLength = projectionLength,
+                        barSize = barSize,
+                        subSpindleColletSize = subSpindleColletSize
+                    )
+                    noteViewModel.addNote(note)
+
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Note saved successfully")
+                    }
+                    onSaveSuccess()
+                }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Save Note")
+                }
             }
         }
     }
