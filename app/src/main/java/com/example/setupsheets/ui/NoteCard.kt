@@ -14,11 +14,13 @@ fun NoteCard(note: Note, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onClick() }
+            .clickable { onClick() }, // clickable card
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(note.title, style = MaterialTheme.typography.titleMedium)
-            Text(note.content, style = MaterialTheme.typography.bodyMedium, maxLines = 2)
+            Text(text = note.title, style = MaterialTheme.typography.titleLarge)
+            Text(text = note.content, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
+

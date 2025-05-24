@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.material3)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
 
     // Room (Database)
     implementation(libs.androidx.room.runtime.v261)

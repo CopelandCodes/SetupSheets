@@ -3,51 +3,40 @@ package com.example.setupsheets
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.setupsheets.ui.theme.SetupSheetsTheme
-import androidx.lifecycle.lifecycleScope
-import com.example.setupsheets.db.Note
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.compose.rememberNavController
+import com.example.setupsheets.data.NoteRepository
 import com.example.setupsheets.db.NoteDatabase
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import com.example.setupsheets.navigation.NavGraph
+import com.example.setupsheets.ui.theme.SetupSheetsTheme
+import com.example.setupsheets.viewmodel.NoteViewModel
+import com.example.setupsheets.viewmodel.NoteViewModelFactory
 
+/**
+ * The main entry point of the app.
+ * Sets up the ViewModel and navigation graph using Jetpack Compose.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-            val db = NoteDatabase.getDatabase(this)
-            val dao = db.noteDao()
+        // Step 1: Initialize the Room database and DAO
+        val dao = NoteDatabase.getDatabase(applicationContext).noteDao()
 
-            // Test Room operations
-            lifecycleScope.launch {
-                // Insert a note
-                val note = Note(
-                    title = "Test Note",
-                    coordinates = "X:1 Y:2 Z:3",
-                    content = "This is just a test",
-                    toolList = "ToolA, ToolB",
-                    projectionLength = "150mm",
-                    barSize = "1.25\"",
-                    subSpindleColletSize = "16C"
-                )
-                dao.insert(note)
+        // Step 2: Create the repository and ViewModel factory
+        val repository = NoteRepository(dao)
+        val viewModelFactory = NoteViewModelFactory(repository)
 
-                // Observe all notes
-                dao.getAllNotes().collectLatest { notes ->
-                    println("⚡ Notes in DB: ${notes.size}")
-                    notes.forEach {
-                        println("📝 ${it.title}: ${it.content}")
-                    }
-                }
-            }
+        // Step 3: Initialize the ViewModel
+        val noteViewModel: NoteViewModel =
+            ViewModelProvider(this, viewModelFactory)[NoteViewModel::class.java]
 
-            // Launch your UI (can still be empty for now)
-            setContent {
-                // Placeholder UI
+        // Step 4: Launch the Jetpack Compose UI and set up navigation
+        setContent {
+            SetupSheetsTheme {
+                val navController = rememberNavController() // Create NavController for screen navigation
+                NavGraph(navController = navController, viewModel = noteViewModel)
             }
         }
+    }
 }
-

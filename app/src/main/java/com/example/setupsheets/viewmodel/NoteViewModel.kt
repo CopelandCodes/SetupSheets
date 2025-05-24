@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
     // Holds the current search query entered by the user
-    private val searchQuery = MutableStateFlow("")
+    internal val searchQuery = MutableStateFlow("")
 
     // All notes from the repository
     private val allNotes = repository.allNotes
