@@ -20,22 +20,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Step 1: Initialize the Room database and DAO
+        // Initialize the Room database and repository
         val dao = NoteDatabase.getDatabase(applicationContext).noteDao()
-
-        // Step 2: Create the repository and ViewModel factory
         val repository = NoteRepository(dao)
         val viewModelFactory = NoteViewModelFactory(repository)
 
-        // Step 3: Initialize the ViewModel
+        // Create the ViewModel
         val noteViewModel: NoteViewModel =
             ViewModelProvider(this, viewModelFactory)[NoteViewModel::class.java]
 
-        // Step 4: Launch the Jetpack Compose UI and set up navigation
+        // Set up the UI
         setContent {
             val navController = rememberNavController()
             SetupSheetsTheme {
-                SetupNavGraph(navController = navController, noteViewModel = noteViewModel)
+                SetupNavGraph(
+                    navController = navController,
+                    noteViewModel = noteViewModel
+                )
             }
         }
     }

@@ -26,33 +26,22 @@ fun SetupNavGraph(
             MainScreen(
                 viewModel = noteViewModel,
                 navController = navController,
-                onEditNote = { noteId ->
-                    // Navigate to the editor screen with the note ID for editing
-                    navController.navigate("editor?noteId=$noteId")
-                },
-                onAddNote = {
-                    // Navigate to the editor screen with no note ID to add a new note
-                    navController.navigate("editor")
-                }
+                onAddNote = { navController.navigate("editor/-1") },
+                onEditNote = { id -> navController.navigate("editor/$id") }
             )
         }
 
         // Editor screen for creating or editing notes
         composable(
-            route = "editor?noteId={noteId}",
-            arguments = listOf(navArgument("noteId") {
-                type = NavType.IntType
-                defaultValue = -1
-            })
+            route = "editor/{noteId}",
+            arguments = listOf(navArgument("noteId") { type = NavType.IntType })
         ) { backStackEntry ->
             val noteId = backStackEntry.arguments?.getInt("noteId") ?: -1
             NoteEditorScreen(
                 noteViewModel = noteViewModel,
-                onSaveSuccess = {
-                    // Return to the main screen after saving
-                    navController.popBackStack()
-                },
-                noteId = noteId
+                onSaveSuccess = { navController.popBackStack() },
+                noteId = noteId,
+                navController = navController
             )
         }
     }

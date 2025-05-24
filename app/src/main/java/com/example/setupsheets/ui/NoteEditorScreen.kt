@@ -2,11 +2,14 @@ package com.example.setupsheets.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.setupsheets.db.Note
 import com.example.setupsheets.db.Tool
 import com.example.setupsheets.viewmodel.NoteViewModel
@@ -16,11 +19,13 @@ import kotlinx.coroutines.launch
  * A composable screen for adding/editing a note with multiple fields and validations.
  * Includes snackbars for user feedback and form validation before saving.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteEditorScreen(
     noteViewModel: NoteViewModel,
     onSaveSuccess: () -> Unit,
-    noteId: Int = -1
+    noteId: Int = -1,
+    navController: NavHostController
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -65,7 +70,15 @@ fun NoteEditorScreen(
     }
 
     // Layout structure using Scaffold for snackbar support
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+    Scaffold(topBar = {TopAppBar(title = {
+            Text(text = if (editingNote != null) "Edit Note" else "Add Note")},
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
+            }
+        )
+    },snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         LazyColumn(
             modifier = Modifier
                 .padding(padding)

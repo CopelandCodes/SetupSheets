@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.setupsheets.db.converters.ToolListConverter
 
-@Database(entities = [Note::class], version = 1, exportSchema = false)
+@Database(entities = [Note::class], version = 2, exportSchema = false)
 @TypeConverters(ToolListConverter::class)
 abstract class NoteDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
