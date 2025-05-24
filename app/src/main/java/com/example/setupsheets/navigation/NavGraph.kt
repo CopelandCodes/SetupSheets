@@ -25,7 +25,15 @@ fun SetupNavGraph(
         composable("main") {
             MainScreen(
                 viewModel = noteViewModel,
-                navController = navController
+                navController = navController,
+                onEditNote = { noteId ->
+                    // Navigate to the editor screen with the note ID for editing
+                    navController.navigate("editor?noteId=$noteId")
+                },
+                onAddNote = {
+                    // Navigate to the editor screen with no note ID to add a new note
+                    navController.navigate("editor")
+                }
             )
         }
 
@@ -41,6 +49,7 @@ fun SetupNavGraph(
             NoteEditorScreen(
                 noteViewModel = noteViewModel,
                 onSaveSuccess = {
+                    // Return to the main screen after saving
                     navController.popBackStack()
                 },
                 noteId = noteId

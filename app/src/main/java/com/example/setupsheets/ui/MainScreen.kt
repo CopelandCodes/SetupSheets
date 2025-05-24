@@ -1,67 +1,56 @@
 package com.example.setupsheets.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.navigation.NavController
-import com.example.setupsheets.db.Note
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.setupsheets.viewmodel.NoteViewModel
 
 /**
- * Main screen displaying search input and filtered note list.
- *
- * @param navController Navigation controller used to navigate between screens.
- * @param viewModel ViewModel that exposes the list of notes and search state.
+ * Displays a list of notes with a search bar and buttons to add or edit notes.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavController, viewModel: NoteViewModel) {
+fun MainScreen(
+    viewModel: NoteViewModel,
+    navController: NavHostController,
+    onEditNote: (Int) -> Unit,
+    onAddNote: () -> Unit
+) {
     val notes by viewModel.notes.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        SearchBar(
-            query = searchQuery,
-            onQueryChanged = viewModel::updateSearchQuery
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        NoteList(
-            notes = notes.filter { it.title.contains(searchQuery, ignoreCase = true) },
-            onClick = { note ->
-                // Navigate to a detail/edit screen with note ID
-                navController.navigate("noteDetail/${note.id}")
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Notes") })
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onAddNote) {
+                Text("+")
             }
-        )
-    }
-}
+        }
+    ) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { viewModel.updateSearchQuery(it) },
+                label = { Text("Search Notes") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            )
 
-/**
- * Search bar input field to filter notes by title.
- */
-@Composable
-fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChanged,
-        label = { Text("Search Notes") },
-        modifier = Modifier.fillMaxWidth()
-    )
-}
-
-/**
- * Scrollable list of note cards.
- */
-@Composable
-fun NoteList(notes: List<Note>, onClick: (Note) -> Unit) {
-    LazyColumn {
-        items(notes) { note ->
-            NoteCard(note = note, onClick = { onClick(note) })
-            Spacer(modifier = Modifier.height(8.dp))
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(notes) { note ->
+                    NoteCard(note = note, onClick = { onEditNote(note.id) })
+                }
+            }
         }
     }
 }
