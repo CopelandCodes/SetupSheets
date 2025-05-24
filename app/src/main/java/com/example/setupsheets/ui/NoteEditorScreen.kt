@@ -1,49 +1,51 @@
 package com.example.setupsheets.ui
 
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.setupsheets.db.Note
+import com.example.setupsheets.db.Tool
 import com.example.setupsheets.viewmodel.NoteViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * A composable screen for adding/editing a note with multiple fields and validations.
+ * Includes snackbars for user feedback and form validation before saving.
+ */
 @Composable
 fun NoteEditorScreen(
     noteViewModel: NoteViewModel,
     onSaveSuccess: () -> Unit
 ) {
-    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // State for each input field
+    // Input state for form fields
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
     var xCoord by remember { mutableStateOf("") }
     var yCoord by remember { mutableStateOf("") }
     var zCoord by remember { mutableStateOf("") }
-
-    var mainTools = remember { mutableStateListOf(Pair("", "")) }
-    var subTools = remember { mutableStateListOf<Pair<String, String>>() }
-
     var projectionLength by remember { mutableStateOf("") }
     var barSize by remember { mutableStateOf("") }
     var subSpindleColletSize by remember { mutableStateOf("") }
 
-    // UI layout
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-    ) { padding ->
-        LazyColumn(modifier = Modifier
-            .padding(padding)
-            .padding(16.dp)
-            .fillMaxSize()) {
+    // Lists for dynamic tool inputs
+    var mainTools = remember { mutableStateListOf(Pair("", "")) }
+    var subTools = remember { mutableStateListOf<Pair<String, String>>() }
 
+    // Layout structure using Scaffold for snackbar support
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+                .fillMaxSize()
+        ) {
+            // Required title field
             item {
                 OutlinedTextField(
                     value = title,
@@ -54,6 +56,7 @@ fun NoteEditorScreen(
                 )
             }
 
+            // Optional content field
             item {
                 OutlinedTextField(
                     value = content,
@@ -63,6 +66,7 @@ fun NoteEditorScreen(
                 )
             }
 
+            // Required coordinate fields (X, Y, Z)
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     OutlinedTextField(
@@ -89,6 +93,7 @@ fun NoteEditorScreen(
                 }
             }
 
+            // Required main spindle tools input (expandable list)
             item {
                 Text("Main Spindle Tools:", style = MaterialTheme.typography.titleMedium)
                 mainTools.forEachIndexed { index, pair ->
@@ -112,6 +117,7 @@ fun NoteEditorScreen(
                 }
             }
 
+            // Optional sub spindle tools input (expandable list)
             item {
                 Text("Sub-Spindle Tools:", style = MaterialTheme.typography.titleMedium)
                 subTools.forEachIndexed { index, pair ->
@@ -135,6 +141,7 @@ fun NoteEditorScreen(
                 }
             }
 
+            // Required projection length (decimal)
             item {
                 OutlinedTextField(
                     value = projectionLength,
@@ -145,6 +152,7 @@ fun NoteEditorScreen(
                 )
             }
 
+            // Required bar size (decimal)
             item {
                 OutlinedTextField(
                     value = barSize,
@@ -155,6 +163,7 @@ fun NoteEditorScreen(
                 )
             }
 
+            // Optional sub spindle collet size (decimal)
             item {
                 OutlinedTextField(
                     value = subSpindleColletSize,
@@ -165,36 +174,44 @@ fun NoteEditorScreen(
                 )
             }
 
+            // Save button with validation and snackbar confirmation
             item {
-                Button(onClick = {
-                    if (title.isBlank() || xCoord.isBlank() || yCoord.isBlank() || zCoord.isBlank()
-                        || mainTools.any { it.first.isBlank() && it.second.isBlank() }
-                        || projectionLength.isBlank() || barSize.isBlank()
-                    ) {
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Please fill out all required fields")
+                Button(
+                    onClick = {
+                        // Form validation for required fields
+                        if (title.isBlank() || xCoord.isBlank() || yCoord.isBlank() || zCoord.isBlank()
+                            || mainTools.any { it.first.isBlank() && it.second.isBlank() }
+                            || projectionLength.isBlank() || barSize.isBlank()
+                        ) {
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Please fill out all required fields")
+                            }
+                            return@Button
                         }
-                        return@Button
-                    }
 
-                    val toolList = (mainTools + subTools).joinToString("\n") { "${it.first}: ${it.second}" }
+                        // Build Note entity using field values
+                        val note = Note(
+                            title = title,
+                            coordinates = "X:$xCoord Y:$yCoord Z:$zCoord",
+                            content = content,
+                            mainSpindleTools = mainTools.map { Tool(it.first, it.second) },
+                            subSpindleTools = subTools.map { Tool(it.first, it.second) },
+                            projectionLength = projectionLength,
+                            barSize = barSize,
+                            subSpindleColletSize = subSpindleColletSize
+                        )
 
-                    val note = Note(
-                        title = title,
-                        coordinates = "X:$xCoord Y:$yCoord Z:$zCoord",
-                        content = content,
-                        toolList = toolList,
-                        projectionLength = projectionLength,
-                        barSize = barSize,
-                        subSpindleColletSize = subSpindleColletSize
-                    )
-                    noteViewModel.addNote(note)
+                        // Insert note via ViewModel
+                        noteViewModel.addNote(note)
 
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Note saved successfully")
-                    }
-                    onSaveSuccess()
-                }, modifier = Modifier.fillMaxWidth()) {
+                        // Confirm save and navigate away
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Note saved successfully")
+                        }
+                        onSaveSuccess()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text("Save Note")
                 }
             }

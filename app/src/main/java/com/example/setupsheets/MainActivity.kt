@@ -33,9 +33,9 @@ class MainActivity : ComponentActivity() {
 
         // Step 4: Launch the Jetpack Compose UI and set up navigation
         setContent {
+            val navController = rememberNavController()
             SetupSheetsTheme {
-                val navController = rememberNavController() // Create NavController for screen navigation
-                NavGraph(navController = navController, viewModel = noteViewModel)
+                NavGraph(navController = navController, noteViewModel = noteViewModel)
             }
         }
     }

@@ -14,23 +14,20 @@ import com.example.setupsheets.viewmodel.NoteViewModel
  * @param viewModel The ViewModel shared across screens for accessing and modifying notes.
  */
 @Composable
-fun NavGraph(navController: NavHostController, viewModel: NoteViewModel) {
-    NavHost(
-        navController = navController,
-        startDestination = "main" // Initial screen displayed when the app launches
-    ) {
-        /**
-         * Main screen route - displays a list of notes.
-         */
+fun NavGraph(
+    navController: NavHostController,
+    noteViewModel: NoteViewModel
+) {
+    NavHost(navController = navController, startDestination = "main") {
         composable("main") {
-            MainScreen(viewModel = viewModel, navController = navController)
+            MainScreen(navController, noteViewModel)
         }
-
-        /**
-         * Note editor screen route - used for adding or editing a note.
-         */
         composable("edit") {
-            NoteEditorScreen(viewModel = viewModel, navController = navController)
+            NoteEditorScreen(
+                noteViewModel = noteViewModel,
+                onSaveSuccess = { navController.navigate("main") }
+            )
         }
     }
 }
+

@@ -2,6 +2,7 @@
 activityComposeVersion = "1.10.1"
 agp = "8.10.0"
 composeBomVersion = "2023.10.01"
+gson = "2.11.0"
 kotlin = "1.9.23"
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -27,6 +28,7 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx-v261 = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime-v261 = { module = "androidx.room:room-runtime", version.ref = "roomRuntimeVersion" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

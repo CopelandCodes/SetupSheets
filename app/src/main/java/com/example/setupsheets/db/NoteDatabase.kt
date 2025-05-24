@@ -5,8 +5,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.setupsheets.db.converters.ToolListConverter
 
 @Database(entities = [Note::class], version = 1, exportSchema = false)
+@TypeConverters(ToolListConverter::class)
 abstract class NoteDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
 
@@ -15,14 +18,14 @@ abstract class NoteDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): NoteDatabase {
             return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
+                Room.databaseBuilder(
                     context.applicationContext,
                     NoteDatabase::class.java,
                     "note_database"
-                ).build()
-                INSTANCE = instance
-                instance
+                ).fallbackToDestructiveMigration()
+                    .build().also { INSTANCE = it }
             }
         }
     }
 }
+
