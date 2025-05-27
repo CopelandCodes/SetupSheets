@@ -32,7 +32,7 @@ fun MainScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddNote) {
-                Text("+")
+                Text("Add Part")
             }
         }
     ) { paddingValues ->
