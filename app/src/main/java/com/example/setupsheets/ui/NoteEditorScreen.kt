@@ -30,6 +30,8 @@ fun NoteEditorScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    var navigatedBack by remember { mutableStateOf(false) }
+
     // Fetch the note if editing (noteId != -1)
     val editingNote = noteViewModel.notes.collectAsState().value.find { it.id == noteId }
 
@@ -248,7 +250,10 @@ fun NoteEditorScreen(
                                 noteViewModel.addNote(note)
                                 snackbarHostState.showSnackbar("Note added")
                             }
-                            onSaveSuccess()
+                            if (!navigatedBack) {
+                                navigatedBack = true
+                                onSaveSuccess() // usually triggers navController.popBackStack()
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth()

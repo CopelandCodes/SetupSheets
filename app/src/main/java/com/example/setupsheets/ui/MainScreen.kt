@@ -28,7 +28,7 @@ fun MainScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Notes") })
+            TopAppBar(title = { Text("Setup Sheets") })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddNote) {
@@ -40,7 +40,7 @@ fun MainScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { viewModel.updateSearchQuery(it) },
-                label = { Text("Search Notes") },
+                label = { Text("Search Parts") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)

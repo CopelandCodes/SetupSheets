@@ -1,6 +1,7 @@
 [versions]
 activityComposeVersion = "1.10.1"
 agp = "8.10.0"
+androidxActivityCompose = "1.8.2"
 composeBomVersion = "2023.10.01"
 gson = "2.11.0"
 kotlin = "1.9.23"
@@ -20,6 +21,7 @@ roomRuntimeVersion = "2.6.1"
 
 
 [libraries]
+androidx-activity-compose-v182 = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
 androidx-compose-bom-v20231001 = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleViewmodelKtx" }
