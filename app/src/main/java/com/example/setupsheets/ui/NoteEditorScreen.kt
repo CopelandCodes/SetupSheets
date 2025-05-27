@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.Alignment
 import androidx.navigation.NavHostController
 import com.example.setupsheets.db.Note
@@ -34,6 +35,8 @@ fun NoteEditorScreen(
     val scope = rememberCoroutineScope()
 
     val editingNote = noteViewModel.notes.collectAsState().value.find { it.id == noteId }
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     var title by rememberSaveable { mutableStateOf(editingNote?.title ?: "") }
     var content by rememberSaveable { mutableStateOf(editingNote?.content ?: "") }
@@ -73,6 +76,32 @@ fun NoteEditorScreen(
         }
     }
 
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    scope.launch {
+                        editingNote?.let {
+                            noteViewModel.deleteNote(it)
+                            snackbarHostState.showSnackbar("Part deleted")
+                            onSaveSuccess()
+                        }
+                    }
+                }) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+            title = { Text("Confirm Delete") },
+            text = { Text("Are you sure you want to delete this part?") }
+        )
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -84,6 +113,15 @@ fun NoteEditorScreen(
                             tint = MaterialTheme.colorScheme.onPrimary)
                     }
                 },
+                actions = {
+                    if (editingNote != null) {
+                        IconButton(onClick = { showDeleteDialog = true }) {
+                            Icon(Icons.Filled.Delete,
+                                contentDescription = "Delete",
+                                tint = MaterialTheme.colorScheme.onPrimary)
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -92,7 +130,7 @@ fun NoteEditorScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.secondary
-    ) { padding ->
+    ){ padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
