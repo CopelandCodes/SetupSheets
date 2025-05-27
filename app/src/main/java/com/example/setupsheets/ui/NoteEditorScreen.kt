@@ -9,7 +9,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavHostController
 import com.example.setupsheets.db.Note
 import com.example.setupsheets.db.Tool
 import com.example.setupsheets.viewmodel.NoteViewModel
@@ -24,7 +27,8 @@ import kotlinx.coroutines.launch
 fun NoteEditorScreen(
     noteViewModel: NoteViewModel,
     onSaveSuccess: () -> Unit,
-    noteId: Int = -1
+    noteId: Int = -1,
+    navController: NavHostController
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -73,6 +77,13 @@ fun NoteEditorScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(if (editingNote != null) "Edit Part" else "Add Part") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onPrimary)
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -165,7 +176,10 @@ fun NoteEditorScreen(
                                 }
                             }
                         }
-                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
                             TextButton(onClick = { mainTools.add("" to "") }) {
                                 Text("Add Tool")
                             }
@@ -187,7 +201,7 @@ fun NoteEditorScreen(
                         Text("Sub-Spindle Tools:", style = MaterialTheme.typography.titleMedium)
                         subTools.forEachIndexed { index, pair ->
                             Row(Modifier.fillMaxWidth()) {
-                                listOf("Tools:" to pair.first, "Description:" to pair.second).forEachIndexed { i, (label, value) ->
+                                listOf("Tool:" to pair.first, "Description:" to pair.second).forEachIndexed { i, (label, value) ->
                                     OutlinedTextField(
                                         value = value,
                                         onValueChange = {
@@ -206,7 +220,10 @@ fun NoteEditorScreen(
                                 }
                             }
                         }
-                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
                             TextButton(onClick = { subTools.add("" to "") }) {
                                 Text("Add Tool")
                             }
@@ -216,18 +233,18 @@ fun NoteEditorScreen(
             }
 
             listOf(
-                "Projection Length:" to projectionLength,
                 "Bar Size:" to barSize,
-                "Sub Spindle Collet Size:" to subSpindleColletSize
+                "Collet Size:" to subSpindleColletSize,
+                "Projection Length:" to projectionLength
             ).forEachIndexed { index, (label, value) ->
                 item {
                     OutlinedTextField(
                         value = value,
                         onValueChange = {
                             when (index) {
-                                0 -> projectionLength = it
-                                1 -> barSize = it
-                                2 -> subSpindleColletSize = it
+                                0 -> barSize = it
+                                1 -> subSpindleColletSize = it
+                                2 -> projectionLength = it
                             }
                         },
                         label = { Text(label) },
@@ -288,10 +305,10 @@ fun NoteEditorScreen(
                         scope.launch {
                             if (editingNote != null) {
                                 noteViewModel.updateNote(note)
-                                snackbarHostState.showSnackbar("Note updated")
+                                snackbarHostState.showSnackbar("Part updated")
                             } else {
                                 noteViewModel.addNote(note)
-                                snackbarHostState.showSnackbar("Note added")
+                                snackbarHostState.showSnackbar("Part added")
                             }
                             onSaveSuccess()
                         }
@@ -303,7 +320,7 @@ fun NoteEditorScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text(if (editingNote != null) "Update Note" else "Save Note", style = MaterialTheme.typography.titleMedium)
+                    Text(if (editingNote != null) "Update Part" else "Save Part", style = MaterialTheme.typography.titleMedium)
                 }
             }
         }
