@@ -1,12 +1,15 @@
 package com.example.setupsheets.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -72,7 +75,7 @@ fun NoteEditorScreen(
     }
 
     // Layout structure using Scaffold for snackbar support
-    Scaffold(topBar = {TopAppBar(title = {
+    Scaffold(topBar = {CenterAlignedTopAppBar(title = {
             Text(text = if (editingNote != null) "Edit Note" else "Add Note")},
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
@@ -80,13 +83,15 @@ fun NoteEditorScreen(
                 }
             }
         )
-    },snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+    },snackbarHost = { SnackbarHost(snackbarHostState) },
+    containerColor = MaterialTheme.colorScheme.background) { padding ->
         LazyColumn(
             modifier = Modifier
                 .padding(padding)
                 .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             // Required title field
             item {
@@ -95,17 +100,8 @@ fun NoteEditorScreen(
                     onValueChange = { title = it },
                     label = { Text("Part:") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-            }
-
-            // Optional content field
-            item {
-                OutlinedTextField(
-                    value = content,
-                    onValueChange = { content = it },
-                    label = { Text("Notes:") },
-                    modifier = Modifier.fillMaxWidth()
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
                 )
             }
 
@@ -117,21 +113,24 @@ fun NoteEditorScreen(
                         onValueChange = { xCoord = it },
                         label = { Text("X:") },
                         modifier = Modifier.weight(1f).padding(end = 4.dp),
-                        singleLine = true
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
                     )
                     OutlinedTextField(
                         value = yCoord,
                         onValueChange = { yCoord = it },
                         label = { Text("Y:") },
                         modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
-                        singleLine = true
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
                     )
                     OutlinedTextField(
                         value = zCoord,
                         onValueChange = { zCoord = it },
                         label = { Text("Z:") },
                         modifier = Modifier.weight(1f).padding(start = 4.dp),
-                        singleLine = true
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
                     )
                 }
             }
@@ -139,8 +138,12 @@ fun NoteEditorScreen(
             // Required main spindle tools input (expandable list)
             item {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
@@ -153,30 +156,42 @@ fun NoteEditorScreen(
                                 OutlinedTextField(
                                     value = pair.first,
                                     onValueChange = { mainTools[index] = pair.copy(first = it) },
-                                    label = { Text("Tools:") },
-                                    modifier = Modifier.weight(1f).padding(end = 4.dp)
+                                    label = { Text("Tool:") },
+                                    modifier = Modifier.weight(1f).padding(end = 4.dp),
+                                    shape = RoundedCornerShape(12.dp)
                                 )
                                 OutlinedTextField(
                                     value = pair.second,
                                     onValueChange = { mainTools[index] = pair.copy(second = it) },
                                     label = { Text("Description:") },
-                                    modifier = Modifier.weight(1f).padding(start = 4.dp)
+                                    modifier = Modifier.weight(1f).padding(start = 4.dp),
+                                    shape = RoundedCornerShape(12.dp)
                                 )
                             }
                         }
-                        TextButton(onClick = { mainTools.add(Pair("", "")) }) {
-                            Text("Add Tool")
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            TextButton(onClick = { mainTools.add(Pair("", "")) }) {
+                                Text("Add Tool", color = MaterialTheme.colorScheme.primary)
+                            }
                         }
                     }
                 }
             }
 
-
             // Optional sub spindle tools input (expandable list)
             item {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
@@ -189,33 +204,31 @@ fun NoteEditorScreen(
                                 OutlinedTextField(
                                     value = pair.first,
                                     onValueChange = { subTools[index] = pair.copy(first = it) },
-                                    label = { Text("Tools:") },
-                                    modifier = Modifier.weight(1f).padding(end = 4.dp)
+                                    label = { Text("Tool:") },
+                                    modifier = Modifier.weight(1f).padding(end = 4.dp),
+                                    shape = RoundedCornerShape(12.dp)
                                 )
                                 OutlinedTextField(
                                     value = pair.second,
                                     onValueChange = { subTools[index] = pair.copy(second = it) },
                                     label = { Text("Description:") },
-                                    modifier = Modifier.weight(1f).padding(start = 4.dp)
+                                    modifier = Modifier.weight(1f).padding(start = 4.dp),
+                                    shape = RoundedCornerShape(12.dp)
                                 )
                             }
                         }
-                        TextButton(onClick = { subTools.add(Pair("", "")) }) {
-                            Text("Add Tool")
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            TextButton(onClick = { subTools.add(Pair("", "")) }) {
+                                Text("Add Tool", color = MaterialTheme.colorScheme.primary)
+                            }
                         }
                     }
                 }
-            }
-
-            // Required projection length (decimal)
-            item {
-                OutlinedTextField(
-                    value = projectionLength,
-                    onValueChange = { projectionLength = it },
-                    label = { Text("Projection Length:") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
             }
 
             // Required bar size (decimal)
@@ -225,7 +238,8 @@ fun NoteEditorScreen(
                     onValueChange = { barSize = it },
                     label = { Text("Bar Size:") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
                 )
             }
 
@@ -234,9 +248,33 @@ fun NoteEditorScreen(
                 OutlinedTextField(
                     value = subSpindleColletSize,
                     onValueChange = { subSpindleColletSize = it },
-                    label = { Text("Sub Spindle Collet Size:") },
+                    label = { Text("Collet Size:") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
+                )
+            }
+
+            // Required projection length (decimal)
+            item {
+                OutlinedTextField(
+                    value = projectionLength,
+                    onValueChange = { projectionLength = it },
+                    label = { Text("Projection Length:") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
+                )
+            }
+
+            // Optional content field
+            item {
+                OutlinedTextField(
+                    value = content,
+                    onValueChange = { content = it },
+                    label = { Text("Notes:") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
                 )
             }
 
@@ -280,9 +318,13 @@ fun NoteEditorScreen(
                             }
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    shape = RoundedCornerShape(50)
                 ) {
-                    Text(if (editingNote != null) "Update Note" else "Save Note")
+                    Text(if (editingNote != null) "Update Note" else "Save Note",
+                        style = MaterialTheme.typography.labelLarge)
                 }
             }
         }

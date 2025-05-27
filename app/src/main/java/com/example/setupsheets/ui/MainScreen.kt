@@ -28,7 +28,7 @@ fun MainScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Setup Sheets") })
+            CenterAlignedTopAppBar(title = { Text("Setup Sheets") })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddNote) {
