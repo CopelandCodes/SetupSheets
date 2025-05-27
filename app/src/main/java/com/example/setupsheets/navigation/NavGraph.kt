@@ -40,8 +40,7 @@ fun SetupNavGraph(
             NoteEditorScreen(
                 noteViewModel = noteViewModel,
                 onSaveSuccess = { navController.popBackStack() },
-                noteId = noteId,
-                navController = navController
+                noteId = noteId
             )
         }
     }
