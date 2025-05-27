@@ -157,7 +157,7 @@ fun NoteEditorScreen(
                         Text("Main Spindle Tools:", style = MaterialTheme.typography.titleMedium)
                         mainTools.forEachIndexed { index, pair ->
                             Row(Modifier.fillMaxWidth()) {
-                                listOf("Tools:" to pair.first, "Description:" to pair.second).forEachIndexed { i, (label, value) ->
+                                listOf("Tool:" to pair.first, "Description:" to pair.second).forEachIndexed { i, (label, value) ->
                                     OutlinedTextField(
                                         value = value,
                                         onValueChange = {
