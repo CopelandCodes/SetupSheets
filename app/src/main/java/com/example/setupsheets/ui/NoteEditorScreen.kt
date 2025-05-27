@@ -85,7 +85,8 @@ fun NoteEditorScreen(
             modifier = Modifier
                 .padding(padding)
                 .padding(16.dp)
-                .fillMaxSize()
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Required title field
             item {
@@ -137,49 +138,72 @@ fun NoteEditorScreen(
 
             // Required main spindle tools input (expandable list)
             item {
-                Text("Main Spindle Tools:", style = MaterialTheme.typography.titleMedium)
-                mainTools.forEachIndexed { index, pair ->
-                    Row(Modifier.fillMaxWidth()) {
-                        OutlinedTextField(
-                            value = pair.first,
-                            onValueChange = { mainTools[index] = pair.copy(first = it) },
-                            label = { Text("Tools:") },
-                            modifier = Modifier.weight(1f).padding(end = 4.dp)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = "Main Spindle Tools:",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        OutlinedTextField(
-                            value = pair.second,
-                            onValueChange = { mainTools[index] = pair.copy(second = it) },
-                            label = { Text("Description:") },
-                            modifier = Modifier.weight(1f).padding(start = 4.dp)
-                        )
+                        mainTools.forEachIndexed { index, pair ->
+                            Row(Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    value = pair.first,
+                                    onValueChange = { mainTools[index] = pair.copy(first = it) },
+                                    label = { Text("Tools:") },
+                                    modifier = Modifier.weight(1f).padding(end = 4.dp)
+                                )
+                                OutlinedTextField(
+                                    value = pair.second,
+                                    onValueChange = { mainTools[index] = pair.copy(second = it) },
+                                    label = { Text("Description:") },
+                                    modifier = Modifier.weight(1f).padding(start = 4.dp)
+                                )
+                            }
+                        }
+                        TextButton(onClick = { mainTools.add(Pair("", "")) }) {
+                            Text("Add Tool")
+                        }
                     }
-                }
-                TextButton(onClick = { mainTools.add(Pair("", "")) }) {
-                    Text("Add Tool")
                 }
             }
 
+
             // Optional sub spindle tools input (expandable list)
             item {
-                Text("Sub-Spindle Tools:", style = MaterialTheme.typography.titleMedium)
-                subTools.forEachIndexed { index, pair ->
-                    Row(Modifier.fillMaxWidth()) {
-                        OutlinedTextField(
-                            value = pair.first,
-                            onValueChange = { subTools[index] = pair.copy(first = it) },
-                            label = { Text("Tools:") },
-                            modifier = Modifier.weight(1f).padding(end = 4.dp)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = "Sub-Spindle Tools:",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        OutlinedTextField(
-                            value = pair.second,
-                            onValueChange = { subTools[index] = pair.copy(second = it) },
-                            label = { Text("Description:") },
-                            modifier = Modifier.weight(1f).padding(start = 4.dp)
-                        )
+                        subTools.forEachIndexed { index, pair ->
+                            Row(Modifier.fillMaxWidth()) {
+                                OutlinedTextField(
+                                    value = pair.first,
+                                    onValueChange = { subTools[index] = pair.copy(first = it) },
+                                    label = { Text("Tools:") },
+                                    modifier = Modifier.weight(1f).padding(end = 4.dp)
+                                )
+                                OutlinedTextField(
+                                    value = pair.second,
+                                    onValueChange = { subTools[index] = pair.copy(second = it) },
+                                    label = { Text("Description:") },
+                                    modifier = Modifier.weight(1f).padding(start = 4.dp)
+                                )
+                            }
+                        }
+                        TextButton(onClick = { subTools.add(Pair("", "")) }) {
+                            Text("Add Tool")
+                        }
                     }
-                }
-                TextButton(onClick = { subTools.add(Pair("", "")) }) {
-                    Text("Add Tool")
                 }
             }
 
