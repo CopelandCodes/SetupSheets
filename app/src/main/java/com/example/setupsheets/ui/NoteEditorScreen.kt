@@ -9,10 +9,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavHostController
 import com.example.setupsheets.db.Note
 import com.example.setupsheets.db.Tool
@@ -161,15 +163,18 @@ fun NoteEditorScreen(
                         OutlinedTextField(
                             value = value,
                             onValueChange = {
-                                when (index) {
-                                    0 -> xCoord = it
-                                    1 -> yCoord = it
-                                    2 -> zCoord = it
+                                if (it.isEmpty() || it.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                                    when (index) {
+                                        0 -> xCoord = it
+                                        1 -> yCoord = it
+                                        2 -> zCoord = it
+                                    }
                                 }
                             },
                             label = { Text(label) },
                             modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
                             singleLine = true,
+                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -270,24 +275,23 @@ fun NoteEditorScreen(
                 }
             }
 
-            listOf(
-                "Bar Size:" to barSize,
-                "Collet Size:" to subSpindleColletSize,
-                "Projection Length:" to projectionLength
-            ).forEachIndexed { index, (label, value) ->
-                item {
+            item {
+                listOf("Bar Size:" to barSize, "Collet Size:" to subSpindleColletSize, "Projection Length:" to projectionLength).forEachIndexed { index, (label, value) ->
                     OutlinedTextField(
                         value = value,
                         onValueChange = {
-                            when (index) {
-                                0 -> barSize = it
-                                1 -> subSpindleColletSize = it
-                                2 -> projectionLength = it
+                            if (it.isEmpty() || it.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                                when (index) {
+                                    0 -> barSize = it
+                                    1 -> subSpindleColletSize = it
+                                    2 -> projectionLength = it
+                                }
                             }
                         },
                         label = { Text(label) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.surface,
