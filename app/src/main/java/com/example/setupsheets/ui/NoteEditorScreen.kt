@@ -200,23 +200,37 @@ fun NoteEditorScreen(
                         Text("Main Spindle Tools:", style = MaterialTheme.typography.titleMedium)
                         mainTools.forEachIndexed { index, pair ->
                             Row(Modifier.fillMaxWidth()) {
-                                listOf("Tool:" to pair.first, "Description:" to pair.second).forEachIndexed { i, (label, value) ->
-                                    OutlinedTextField(
-                                        value = value,
-                                        onValueChange = {
-                                            mainTools[index] = if (i == 0) pair.copy(first = it) else pair.copy(second = it)
-                                        },
-                                        label = { Text(label) },
-                                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
-                                        shape = RoundedCornerShape(12.dp),
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                            focusedContainerColor = MaterialTheme.colorScheme.surface,
-                                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                                        )
+                                OutlinedTextField(
+                                    value = pair.first,
+                                    onValueChange = {
+                                        mainTools[index] = pair.copy(first = it)
+                                    },
+                                    label = { Text("Tool:") },
+                                    modifier = Modifier.weight(0.2f).padding(horizontal = 4.dp),
+                                    singleLine = true,
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
                                     )
-                                }
+                                )
+                                OutlinedTextField(
+                                    value = pair.second,
+                                    onValueChange = {
+                                        mainTools[index] = pair.copy(second = it)
+                                    },
+                                    label = { Text("Description:") },
+                                    modifier = Modifier.weight(0.8f).padding(horizontal = 4.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                                    )
+                                )
                             }
                         }
                         Box(
@@ -244,23 +258,37 @@ fun NoteEditorScreen(
                         Text("Sub-Spindle Tools:", style = MaterialTheme.typography.titleMedium)
                         subTools.forEachIndexed { index, pair ->
                             Row(Modifier.fillMaxWidth()) {
-                                listOf("Tool:" to pair.first, "Description:" to pair.second).forEachIndexed { i, (label, value) ->
-                                    OutlinedTextField(
-                                        value = value,
-                                        onValueChange = {
-                                            subTools[index] = if (i == 0) pair.copy(first = it) else pair.copy(second = it)
-                                        },
-                                        label = { Text(label) },
-                                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
-                                        shape = RoundedCornerShape(12.dp),
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                            focusedContainerColor = MaterialTheme.colorScheme.surface,
-                                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                                        )
+                                OutlinedTextField(
+                                    value = pair.first,
+                                    onValueChange = {
+                                        subTools[index] = pair.copy(first = it)
+                                    },
+                                    label = { Text("Tool:") },
+                                    modifier = Modifier.weight(0.2f).padding(horizontal = 4.dp),
+                                    singleLine = true,
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
                                     )
-                                }
+                                )
+                                OutlinedTextField(
+                                    value = pair.second,
+                                    onValueChange = {
+                                        subTools[index] = pair.copy(second = it)
+                                    },
+                                    label = { Text("Description:") },
+                                    modifier = Modifier.weight(0.8f).padding(horizontal = 4.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                                    )
+                                )
                             }
                         }
                         Box(
