@@ -11,10 +11,15 @@ The app features:
 # Development Environment
 
 IDE: Android Studio
+
 Language: Kotlin
+
 Framework: Jetpack Compose for the UI
+
 Database: Local persistence using Room
+
 Version Control: Git and GitHub
+
 Device: Android Emulator
 
 # Useful Websites
