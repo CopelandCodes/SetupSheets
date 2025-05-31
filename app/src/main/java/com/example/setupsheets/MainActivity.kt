@@ -9,8 +9,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
-import com.example.setupsheets.data.NoteRepository
-import com.example.setupsheets.db.NoteDatabase
+import com.example.setupsheets.data.PartRepository
+import com.example.setupsheets.db.PartDatabase
 import com.example.setupsheets.navigation.SetupNavGraph
 import com.example.setupsheets.ui.theme.SetupSheetsTheme
 import com.example.setupsheets.viewmodel.NoteViewModel
@@ -25,10 +25,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Initialize the Room database by obtaining an instance of NoteDatabase
-        val dao = NoteDatabase.getDatabase(applicationContext).noteDao()
+        val dao = PartDatabase.getDatabase(applicationContext).noteDao()
 
         // Create a repository using the DAO for data operations
-        val repository = NoteRepository(dao)
+        val repository = PartRepository(dao)
 
         // Create a ViewModel factory to supply the repository to the ViewModel
         val viewModelFactory = NoteViewModelFactory(repository)

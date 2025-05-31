@@ -93,7 +93,7 @@ fun MainScreen(
             ) {
                 // Each note is displayed using a NoteCard composable.
                 items(notes) { note ->
-                    NoteCard(note = note, onClick = { onEditNote(note.id) })
+                    NoteCard(part = note, onClick = { onEditNote(note.id) })
                 }
             }
         }

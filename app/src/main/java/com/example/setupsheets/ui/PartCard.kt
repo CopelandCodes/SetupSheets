@@ -6,7 +6,7 @@ import androidx.compose.ui.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.unit.dp
-import com.example.setupsheets.db.Note
+import com.example.setupsheets.db.Part
 
 /**
  * Composable function that displays a single Note item as a card in the list.
@@ -16,7 +16,7 @@ import com.example.setupsheets.db.Note
  * onClick- Callback function invoked when the card is clicked.
  */
 @Composable
-fun NoteCard(note: Note, onClick: () -> Unit) {
+fun NoteCard(part: Part, onClick: () -> Unit) {
     // Card is a material container for displaying information with elevation and background styling.
     Card(
         modifier = Modifier
@@ -29,7 +29,7 @@ fun NoteCard(note: Note, onClick: () -> Unit) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Display the note's title using the theme's titleMedium text style.
             Text(
-                text = note.title,
+                text = part.title,
                 style = MaterialTheme.typography.titleMedium
             )
         }

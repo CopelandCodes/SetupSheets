@@ -16,7 +16,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavHostController
-import com.example.setupsheets.db.Note
+import com.example.setupsheets.db.Part
 import com.example.setupsheets.db.Tool
 import com.example.setupsheets.viewmodel.NoteViewModel
 import kotlinx.coroutines.launch
@@ -373,7 +373,7 @@ fun NoteEditorScreen(
                             return@Button
                         }
                         // Create a Note object with user input
-                        val note = Note(
+                        val part = Part(
                             id = editingNote?.id ?: 0,
                             title = title,
                             coordinates = "X:$xCoord Y:$yCoord Z:$zCoord",
@@ -387,10 +387,10 @@ fun NoteEditorScreen(
                         // Save or update the note in the database
                         scope.launch {
                             if (editingNote != null) {
-                                noteViewModel.updateNote(note)
+                                noteViewModel.updateNote(part)
                                 snackbarHostState.showSnackbar("Part updated")
                             } else {
-                                noteViewModel.addNote(note)
+                                noteViewModel.addNote(part)
                                 snackbarHostState.showSnackbar("Part added")
                             }
                             onSaveSuccess()

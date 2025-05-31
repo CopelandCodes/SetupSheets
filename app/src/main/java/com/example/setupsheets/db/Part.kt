@@ -10,7 +10,7 @@ import com.example.setupsheets.db.converters.ToolListConverter
  */
 @Entity(tableName = "notes")
 @TypeConverters(ToolListConverter::class) // Required to store list of custom Tool objects
-data class Note(
+data class Part(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
 
     // Required: Part name
