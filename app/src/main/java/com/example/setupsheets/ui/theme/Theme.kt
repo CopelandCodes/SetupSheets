@@ -1,38 +1,45 @@
 package com.example.setupsheets.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.graphics.Color
 
+/**
+ * Dark color scheme for dark mode using colors defined in Color.kt.
+ */
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
     tertiary = Pink80
 )
 
+/**
+ * Light color scheme for light mode using colors defined in Color.kt.
+ */
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF1976D2),       // Blue
-    onPrimary = Color.White,
-    secondary = Color(0xFF64B5F6),     // Light Blue
-    onSecondary = Color.Black,
-    background = Color(0xFFF5F5F5),    // Light Gray
-    onBackground = Color.Black,
-    surface = Color.White,
-    onSurface = Color.Black
+    primary = BluePrimary,
+    onPrimary = OnPrimaryColor,
+    secondary = BlueSecondary,
+    onSecondary = OnSecondaryColor,
+    background = LightBackground,
+    onBackground = OnBackgroundColor,
+    surface = SurfaceColor,
+    onSurface = OnSurfaceColor
 )
 
+/**
+ * The main theme composable that applies either the light or dark color scheme
+ * depending on the user's system settings or explicit preference.
+ *
+ * darkTheme- Determines whether dark mode should be used; defaults to system preference.
+ * dynamicColor- Enables dynamic theming on Android 12+ (currently disabled by default).
+ * Content- The content composable that will be themed.
+ */
 @Composable
 fun SetupSheetsTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -41,7 +48,6 @@ fun SetupSheetsTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

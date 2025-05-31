@@ -22,24 +22,35 @@ import com.example.setupsheets.viewmodel.NoteViewModel
 import kotlinx.coroutines.launch
 
 /**
- * A composable screen for adding/editing a note with multiple fields and validations.
- * Includes snackbars for user feedback and form validation before saving.
+ * A composable screen for adding or editing a note (part).
+ * Provides input fields for entering part details, including title, coordinates,
+ * dimensions, notes, and associated tools.
+ *
+ * - Pre-populates fields when editing an existing part.
+ * - Includes delete confirmation, validations, and snackbars for user feedback.
+ * - Uses Compose Material3 components and theming.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteEditorScreen(
     noteViewModel: NoteViewModel,
     onSaveSuccess: () -> Unit,
+    // ID of the note to edit; -1 indicates creating a new note.
     noteId: Int = -1,
     navController: NavHostController
 ) {
+    // Coroutine scope for launching background tasks.
     val snackbarHostState = remember { SnackbarHostState() }
+    // Coroutine scope for launching background tasks.
     val scope = rememberCoroutineScope()
 
+    // Find the note in the list if editing.
     val editingNote = noteViewModel.notes.collectAsState().value.find { it.id == noteId }
 
+    // State for delete confirmation dialog.
     var showDeleteDialog by remember { mutableStateOf(false) }
 
+    // UI state for input fields, with pre-population support.
     var title by rememberSaveable { mutableStateOf(editingNote?.title ?: "") }
     var content by rememberSaveable { mutableStateOf(editingNote?.content ?: "") }
     var xCoord by rememberSaveable { mutableStateOf("") }
@@ -49,6 +60,7 @@ fun NoteEditorScreen(
     var barSize by rememberSaveable { mutableStateOf(editingNote?.barSize ?: "") }
     var subSpindleColletSize by rememberSaveable { mutableStateOf(editingNote?.subSpindleColletSize ?: "") }
 
+    // Lists for managing main and sub-spindle tools.
     var mainTools = remember {
         mutableStateListOf<Pair<String, String>>().apply {
             if (editingNote != null) {
@@ -66,7 +78,7 @@ fun NoteEditorScreen(
             }
         }
     }
-
+    // Pre-populate from database coordinate fields if editing.
     LaunchedEffect(editingNote) {
         editingNote?.coordinates?.let { coords ->
             val regex = """X:(\S+)\s+Y:(\S+)\s+Z:(\S+)""".toRegex()
@@ -77,7 +89,7 @@ fun NoteEditorScreen(
             }
         }
     }
-
+    // Delete confirmation dialog box before deletion
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -103,7 +115,7 @@ fun NoteEditorScreen(
             text = { Text("Are you sure you want to delete this part?") }
         )
     }
-
+    // Main screen scaffold with centered top app bar, snackbar, and background styling.
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -140,6 +152,7 @@ fun NoteEditorScreen(
                 .padding(16.dp)
                 .background(MaterialTheme.colorScheme.secondary)
         ) {
+            // Required field for the part name
             item {
                 OutlinedTextField(
                     value = title,
@@ -156,14 +169,14 @@ fun NoteEditorScreen(
                     )
                 )
             }
-
+            // Text fields for the X, Y, and Z coordinates
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     listOf("X:" to xCoord, "Y:" to yCoord, "Z:" to zCoord).forEachIndexed { index, (label, value) ->
                         OutlinedTextField(
                             value = value,
                             onValueChange = {
-                                if (it.isEmpty() || it.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                                if (it.isEmpty() || it.matches(Regex("^-?\\d*\\.?\\d*\$"))) {
                                     when (index) {
                                         0 -> xCoord = it
                                         1 -> yCoord = it
@@ -186,7 +199,7 @@ fun NoteEditorScreen(
                     }
                 }
             }
-
+            // Optional Main spindle tools section for tool number and tool description
             item {
                 Card(
                     modifier = Modifier
@@ -244,7 +257,7 @@ fun NoteEditorScreen(
                     }
                 }
             }
-
+            // Optional Sub-spindle tools section for tool number and tool description
             item {
                 Card(
                     modifier = Modifier
@@ -302,7 +315,7 @@ fun NoteEditorScreen(
                     }
                 }
             }
-
+            // Generates fields for bar size, sub-spindle collet size, and initial projection length
             item {
                 listOf("Bar Size:" to barSize, "Collet Size:" to subSpindleColletSize, "Projection Length:" to projectionLength).forEachIndexed { index, (label, value) ->
                     OutlinedTextField(
@@ -330,7 +343,7 @@ fun NoteEditorScreen(
                     )
                 }
             }
-
+            // Notes text box
             item {
                 OutlinedTextField(
                     value = content,
@@ -346,10 +359,11 @@ fun NoteEditorScreen(
                     )
                 )
             }
-
+            // Save button
             item {
                 Button(
                     onClick = {
+                        // Validate required fields before saving
                         if (title.isBlank() || xCoord.isBlank() || yCoord.isBlank() || zCoord.isBlank()
                             || mainTools.any { it.first.isBlank() && it.second.isBlank() }
                             || projectionLength.isBlank() || barSize.isBlank()
@@ -359,7 +373,7 @@ fun NoteEditorScreen(
                             }
                             return@Button
                         }
-
+                        // Create a Note object with user input
                         val note = Note(
                             id = editingNote?.id ?: 0,
                             title = title,
@@ -371,7 +385,7 @@ fun NoteEditorScreen(
                             barSize = barSize,
                             subSpindleColletSize = subSpindleColletSize
                         )
-
+                        // Save or update the note in the database
                         scope.launch {
                             if (editingNote != null) {
                                 noteViewModel.updateNote(note)

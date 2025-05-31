@@ -39,37 +39,29 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         emptyList()
     )
 
-    /**
-     * Updates the current search query.
-     */
+    //Updates the current search query.
     fun updateSearchQuery(query: String) {
         searchQuery.value = query
     }
 
-    /**
-     * Adds a new note.
-     */
+    //Adds a new note.
     fun addNote(note: Note) = viewModelScope.launch {
         repository.insert(note)
     }
 
-    /**
-     * Updates an existing note.
-     */
+    //Updates an existing note.
     fun updateNote(note: Note) = viewModelScope.launch {
         repository.update(note)
     }
 
-    /**
-     * Deletes a note.
-     */
+    //Deletes a note.
     fun deleteNote(note: Note) = viewModelScope.launch {
         repository.delete(note)
     }
 }
 
 /**
- * Factory to create instances of NoteViewModel with a repository dependency.
+ * Creates instances of NoteViewModel with a repository dependency.
  */
 class NoteViewModelFactory(private val repository: NoteRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

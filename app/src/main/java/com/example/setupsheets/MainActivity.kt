@@ -17,34 +17,44 @@ import com.example.setupsheets.viewmodel.NoteViewModel
 import com.example.setupsheets.viewmodel.NoteViewModelFactory
 
 /**
- * The main entry point of the app.
- * Sets up the ViewModel and navigation graph using Jetpack Compose.
+ * MainActivity is the entry point of the Setup Sheets app.
+ * It initializes the database, ViewModel, and sets up the Compose UI.
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize the Room database and repository
+        // Initialize the Room database by obtaining an instance of NoteDatabase
         val dao = NoteDatabase.getDatabase(applicationContext).noteDao()
+
+        // Create a repository using the DAO for data operations
         val repository = NoteRepository(dao)
+
+        // Create a ViewModel factory to supply the repository to the ViewModel
         val viewModelFactory = NoteViewModelFactory(repository)
 
-        // Create the ViewModel
+        // Obtain the ViewModel instance using the factory
         val noteViewModel: NoteViewModel =
             ViewModelProvider(this, viewModelFactory)[NoteViewModel::class.java]
 
-        // Set up the UI
+        // Set up the Compose UI
         setContent {
+            // Remember a NavController for navigation between screens
             val navController = rememberNavController()
+
+            // Apply the custom app theme
             SetupSheetsTheme {
+                // Surface defines the container for the app UI with proper background color
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    // SetupNavGraph defines the navigation graph with all app screens
                     SetupNavGraph(
                         navController = navController,
                         noteViewModel = noteViewModel
-                    )}
+                    )
+                }
             }
         }
     }
