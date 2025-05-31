@@ -3,28 +3,18 @@ This project is a Setup Sheets application designed to help CNC machinists and o
 
 The app features:
 
-A main screen listing all parts with search functionality.
-
-An editor screen for adding or editing part details.
-
-The ability to record tooling, coordinates, and notes.
-
-Easy navigation and a clean, modern design.
-
-Confirmation prompts before deleting any data.
+* A main screen listing all parts with search functionality.
+* An editor screen for adding or editing part details.
+* The ability to record tooling, coordinates, and notes.
+* Confirmation prompts before deleting any data.
 
 # Development Environment
 
 IDE: Android Studio
-
 Language: Kotlin
-
 Framework: Jetpack Compose for the UI
-
-Database: Local persistence using Room 
-
+Database: Local persistence using Room
 Version Control: Git and GitHub
-
 Device: Android Emulator
 
 # Useful Websites
