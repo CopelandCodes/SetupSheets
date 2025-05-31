@@ -366,7 +366,6 @@ fun NoteEditorScreen(
                         // Validate required fields before saving
                         if (title.isBlank() || xCoord.isBlank() || yCoord.isBlank() || zCoord.isBlank()
                             || mainTools.any { it.first.isBlank() && it.second.isBlank() }
-                            || projectionLength.isBlank() || barSize.isBlank()
                         ) {
                             scope.launch {
                                 snackbarHostState.showSnackbar("Please fill out all required fields")

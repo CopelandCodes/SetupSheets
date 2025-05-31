@@ -33,6 +33,8 @@ Device: Android Emulator
 
 * Implement user authentication for data protection.
 * Tool library to store common tools for easier documentation
+* Give user option to create a Mill setup or Lathe setup option with related fields
+* Add part viewing screen in place of automatically editing part
 * Add cloud-based backup and synchronization options.
 * Integrate advanced search features like filters and tags.
 * Improve UI responsiveness and error handling.
