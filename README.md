@@ -32,6 +32,7 @@ Device: Android Emulator
 # Future Work
 
 * Implement user authentication for data protection.
+* Tool library to store common tools for easier documentation
 * Add cloud-based backup and synchronization options.
 * Integrate advanced search features like filters and tags.
 * Improve UI responsiveness and error handling.
