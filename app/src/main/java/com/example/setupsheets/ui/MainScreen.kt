@@ -14,11 +14,11 @@ import com.example.setupsheets.viewmodel.NoteViewModel
 
 /**
  * Composable function that displays the main screen of the app.
- * This screen shows a list of notes (setup sheets) along with a search bar and an add button.
+ * This screen shows a list of parts (setup sheets) along with a search bar and an add button.
  *
- * viewModel- The ViewModel that provides the notes and manages state.
+ * viewModel- The ViewModel that provides the parts and manages state.
  * navController- The NavHostController for navigation between screens.
- * onEditNote- A callback function triggered when a note is selected for editing.
+ * onEditNote- A callback function triggered when a part is selected for editing.
  * onAddNote- A callback function triggered when the user taps the add button.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,7 +29,7 @@ fun MainScreen(
     onEditNote: (Int) -> Unit,
     onAddNote: () -> Unit
 ) {
-    // Collects the list of notes from the ViewModel and re-renders on changes.
+    // Collects the list of parts from the ViewModel and re-renders on changes.
     val notes by viewModel.notes.collectAsState()
 
     // Collects the current search query from the ViewModel.

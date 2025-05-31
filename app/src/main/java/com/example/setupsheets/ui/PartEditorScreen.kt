@@ -127,6 +127,7 @@ fun NoteEditorScreen(
                             tint = MaterialTheme.colorScheme.onPrimary)
                     }
                 },
+                // Delete button is visible if editing part
                 actions = {
                     if (editingNote != null) {
                         IconButton(onClick = { showDeleteDialog = true }) {
